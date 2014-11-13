@@ -34,7 +34,6 @@ public class Menu extends JFrame{
                     Desktop.getDesktop().open(new File(resourceFile));
                     l.setText(url);
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     l.setText("IOException:"+e.getLocalizedMessage() + "\n\t" + url);
                 } catch (IllegalArgumentException ie) {
                     l.setText("IllegalArgumentException:"+ie.getLocalizedMessage() + "\n\t" + url);
@@ -42,7 +41,6 @@ public class Menu extends JFrame{
                     l.setText("NullPointerException:"+e.getLocalizedMessage() + "\n\t" + url);
                 }
                 catch (URISyntaxException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
