@@ -2,10 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.*;
 
 /**
  * Created by Alexej on 14.11.2014.
@@ -14,6 +11,7 @@ public class Menu extends JFrame{
     JPanel main_panel = new JPanel();
     JButton b = new JButton("СТАРТ");
     final JTextPane l = new JTextPane();
+    File f;
 
     public Menu() {
         this.setLayout(new FlowLayout());
@@ -24,14 +22,28 @@ public class Menu extends JFrame{
         this.setLocationRelativeTo(null);
         b.addActionListener(new ActionListener() {
 
+            public void write(InputStream in, OutputStream out) throws IOException {
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = in.read(buffer)) >= 0)
+                    out.write(buffer, 0, len);
+                in.close();
+                out.close();
+            }
+
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String url = null;
                 try {
-                    URI resourceFile = Init.class.getResource("/tutor.exe").toURI();
+                    f=File.createTempFile("temp", ".exe");
+
+                    InputStream resourceFile = Init.class.getResourceAsStream("data/tutor.exe");
+                    FileOutputStream fo=new FileOutputStream("temp");
+                    write(resourceFile,new FileOutputStream(f));
+
                     System.out.println(url="Opening URI: "
                             + resourceFile.toString());
-                    Desktop.getDesktop().open(new File(resourceFile));
+                    Desktop.getDesktop().open(f);
                     l.setText(url);
                 } catch (IOException e) {
                     l.setText("IOException:"+e.getLocalizedMessage() + "\n\t" + url);
@@ -39,9 +51,6 @@ public class Menu extends JFrame{
                     l.setText("IllegalArgumentException:"+ie.getLocalizedMessage() + "\n\t" + url);
                 } catch (NullPointerException e) {
                     l.setText("NullPointerException:"+e.getLocalizedMessage() + "\n\t" + url);
-                }
-                catch (URISyntaxException e) {
-                    e.printStackTrace();
                 }
             }
         });
