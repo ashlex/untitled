@@ -12,45 +12,37 @@ public class Menu extends JFrame{
     JButton b = new JButton("СТАРТ");
     final JTextPane l = new JTextPane();
     File f;
+    JFrame frame=this;
 
     public Menu() {
-        this.setLayout(new FlowLayout());
+	    this.setLayout(new FlowLayout());
         this.setVisible(true);
         this.setSize(new Dimension(500, 500));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         b.addActionListener(new ActionListener() {
-
-            public void write(InputStream in, OutputStream out) throws IOException {
-                byte[] buffer = new byte[1024];
-                int len;
-                while ((len = in.read(buffer)) >= 0)
-                    out.write(buffer, 0, len);
-                in.close();
-                out.close();
-            }
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String url = null;
+                String pathFile1 ="data/tutor.exe";
                 try {
                     f=File.createTempFile("temp", ".exe");
+                    InputStream resourceFile = Init.class.getResourceAsStream(pathFile1);
+                    Menu.write(resourceFile, new FileOutputStream(f));
 
-                    InputStream resourceFile = Init.class.getResourceAsStream("data/tutor.exe");
-                    FileOutputStream fo=new FileOutputStream("temp");
-                    write(resourceFile,new FileOutputStream(f));
-
-                    System.out.println(url="Opening URI: "
-                            + resourceFile.toString());
-                    Desktop.getDesktop().open(f);
-                    l.setText(url);
+                    Process p=null;
+                    p=Runtime.getRuntime().exec(f.getPath());
+                    frame.setVisible(false);
+                    p.waitFor();
+                    frame.setVisible(true);
+                }  catch (InterruptedException e) {
+                    JOptionPane.showMessageDialog(null, e.getStackTrace().toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                } catch (FileNotFoundException e) {
+                    JOptionPane.showMessageDialog(null, "Файл " + pathFile1 + " не найден.\nПроверьте целостность пакета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
-                    l.setText("IOException:"+e.getLocalizedMessage() + "\n\t" + url);
-                } catch (IllegalArgumentException ie) {
-                    l.setText("IllegalArgumentException:"+ie.getLocalizedMessage() + "\n\t" + url);
-                } catch (NullPointerException e) {
-                    l.setText("NullPointerException:"+e.getLocalizedMessage() + "\n\t" + url);
+                    JOptionPane.showMessageDialog(null, e.getStackTrace().toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                }catch (NullPointerException e) {
+                    JOptionPane.showMessageDialog(null, "Файл " + pathFile1 + " не найден.\nПроверьте целостность пакета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -59,5 +51,13 @@ public class Menu extends JFrame{
         this.add(main_panel);
         this.add(l);
 
+    }
+    public static void write(InputStream in, OutputStream out) throws IOException,NullPointerException {
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = in.read(buffer)) >= 0)
+            out.write(buffer, 0, len);
+        in.close();
+        out.close();
     }
 }
