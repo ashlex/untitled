@@ -4,12 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 
-/**
- * Created by Alexej on 14.11.2014.
- */
 public class Menu extends JFrame{
     JPanel main_panel = new JPanel();
-    JButton b = new JButton("СТАРТ");
+    JButton button1 = new JButton("ПРЕДСТАВЛЕНИЕ ЧИСЕЛ В КОМПЬЮТЕРЕ");
+    JButton button2 = new JButton("ЧИСЛА В ФОРМАТЕ С ПЛАВАЮЩЕЙ ТОЧКОЙ");
     final JTextPane l = new JTextPane();
     File f;
     JFrame frame=this;
@@ -21,7 +19,7 @@ public class Menu extends JFrame{
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        b.addActionListener(new ActionListener() {
+        button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String pathFile1 ="data/tutor.exe";
@@ -46,12 +44,33 @@ public class Menu extends JFrame{
                 }
             }
         });
-        main_panel.add(b);
+		button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+				String pathFile ="resources\\lab3.jar";
+				f=new File(pathFile);
+				Runtime r = Runtime.getRuntime();
+				Process p = null;
+				String cmd= "java -jar "+pathFile;
+				System.out.println(cmd);
+				l.setText(cmd);
+				try {
+					p=r.exec(cmd);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+        });
+		main_panel.setLayout(new FlowLayout());
+        main_panel.add(button1);
+        main_panel.add(button2);
         main_panel.add(l);
         this.add(main_panel);
-        this.add(l);
+//        this.add(l);
 
     }
+
     public static void write(InputStream in, OutputStream out) throws IOException,NullPointerException {
         byte[] buffer = new byte[1024];
         int len;
