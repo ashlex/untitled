@@ -82,7 +82,6 @@ public class Menu extends JFrame{
 		mainPanel.add(pan,BorderLayout.CENTER);
 		mainPanel.add(bottomPanel,BorderLayout.SOUTH);
 		bgraund.add(mainPanel);
-        this.add(bgraund);
 //        this.add(l);
 
     }
