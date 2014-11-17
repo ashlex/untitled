@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -5,16 +6,27 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 public class Menu extends JFrame{
-    JPanel main_panel = new JPanel();
+    JPanel bgraund,mainPanel;
     JButton button1 = new JButton("ПРЕДСТАВЛЕНИЕ ЧИСЕЛ В КОМПЬЮТЕРЕ");
     JButton button2 = new JButton("ЧИСЛА В ФОРМАТЕ С ПЛАВАЮЩЕЙ ТОЧКОЙ");
-    final JTextPane l = new JTextPane();
-    File f;
-    JFrame frame=this;
 
     public Menu() {
-	    this.setLayout(new FlowLayout());
-        this.setVisible(true);
+		bgraund=new JPanel(){
+			@Override
+			public void paintComponent(Graphics g){
+				Image im = null;
+				try {
+					im = ImageIO.read(new File("resources\\fon.jpg"));
+				} catch (IOException e) {}
+				g.drawImage(im, 0, 0,getWidth(), getHeight(), null);
+			}
+
+		};
+
+		this.setContentPane(bgraund);
+		mainPanel=new JPanel();
+		bgraund.setLayout(new GridLayout(1,1));
+		this.setVisible(true);
         this.setSize(new Dimension(500, 500));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);
@@ -24,17 +36,11 @@ public class Menu extends JFrame{
             public void actionPerformed(ActionEvent arg0) {
                 String pathFile1 ="data/tutor.exe";
                 try {
-                    f=File.createTempFile("temp", ".exe");
+                    File f=File.createTempFile("temp", ".exe");
                     InputStream resourceFile = Init.class.getResourceAsStream(pathFile1);
                     Menu.write(resourceFile, new FileOutputStream(f));
+					exec(f.getPath());
 
-                    Process p=null;
-                    p=Runtime.getRuntime().exec(f.getPath());
-                    frame.setVisible(false);
-                    p.waitFor();
-                    frame.setVisible(true);
-                }  catch (InterruptedException e) {
-                    JOptionPane.showMessageDialog(null, e.getStackTrace().toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
                 } catch (FileNotFoundException e) {
                     JOptionPane.showMessageDialog(null, "Файл " + pathFile1 + " не найден.\nПроверьте целостность пакета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
@@ -45,28 +51,38 @@ public class Menu extends JFrame{
             }
         });
 		button2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-				String pathFile ="resources\\lab3.jar";
-				f=new File(pathFile);
-				Runtime r = Runtime.getRuntime();
-				Process p = null;
-				String cmd= "java -jar "+pathFile;
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String pathFile = "resources\\lab3.jar";
+				String cmd = "java -jar " + pathFile;
 				System.out.println(cmd);
-				l.setText(cmd);
-				try {
-					p=r.exec(cmd);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
+				exec(cmd);
 			}
-        });
-		main_panel.setLayout(new FlowLayout());
-        main_panel.add(button1);
-        main_panel.add(button2);
-        main_panel.add(l);
-        this.add(main_panel);
+		});
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.setOpaque(false);
+		JPanel pan=new JPanel();
+		pan.setLayout(new FlowLayout());
+		pan.setOpaque(false);
+        pan.add(button1);
+        pan.add(button2);
+		JPanel namePanel=new JPanel();
+		namePanel.setLayout(new FlowLayout());
+		namePanel.setOpaque(false);
+		JPanel bottomPanel=new JPanel();
+		bottomPanel.setLayout(new FlowLayout());
+		bottomPanel.setOpaque(false);
+		JLabel name=new JLabel("<html><center>ПРЕДСТАВЛЕНИЕ ИНФОРМАЦИИ<br>В КОМПЬЮТЕРЕ</html>");
+		JLabel bottom=new JLabel("<html><div style=\"color:black\">МГУПС (МИИТ)</div></html>");
+		name.setFont(new Font("Tahoma",Font.BOLD,20));
+		bottom.setFont(new Font("Tahoma",Font.BOLD,20));
+		namePanel.add(name);
+		bottomPanel.add(bottom);
+		mainPanel.add(namePanel, BorderLayout.NORTH);
+		mainPanel.add(pan,BorderLayout.CENTER);
+		mainPanel.add(bottomPanel,BorderLayout.SOUTH);
+		bgraund.add(mainPanel);
+        this.add(bgraund);
 //        this.add(l);
 
     }
@@ -79,4 +95,22 @@ public class Menu extends JFrame{
         in.close();
         out.close();
     }
+	public void exec(String pathFile){
+		Process p=null;
+		try {
+			p=Runtime.getRuntime().exec(pathFile);
+
+		this.setVisible(false);
+		p.waitFor();
+		this.setVisible(true);
+		}  catch (InterruptedException e) {
+			JOptionPane.showMessageDialog(null, e.getStackTrace().toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null, "Файл " + pathFile + " не найден.\nПроверьте целостность пакета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.getStackTrace().toString(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+		}catch (NullPointerException e) {
+			JOptionPane.showMessageDialog(null, "Файл " + pathFile + " не найден.\nПроверьте целостность пакета.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+		}
+	}
 }
